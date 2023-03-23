@@ -69,12 +69,20 @@ module.exports = {
     },
 
     
-    createReaction(req, res) {
+    async createReaction(req, res) {
         console.log('Adding a reaction');
         console.log(req.body);
+
+        const reaction = await Reaction
+            .create(req.body)
+            .catch((err) => {
+                console.log(err);
+                return res.status(500).json(err);
+            }); 
+        console.log(reaction);
         Thought.findOneAndUpdate(
             {_id: req.params.thoughtId},
-            {$addToSet: {reactions: req.body}},  
+            {$addToSet: {reactions: reaction._id}},  
             {new: true}
         )
         .then((thought) => 
@@ -87,13 +95,14 @@ module.exports = {
 
     
     removeReaction(req, res) {
+        console.log(req.params);
         Thought.findOneAndUpdate( 
             {_id: req.params.thoughtId}, 
-            {$pull: {reactions: {reactionId: req.params.reactionId}}}, 
+            {$pull: {reactions: req.params.reactionId}}, 
             {runValidators: true, new: true}
         )
         .then((thought) => 
-            !video
+            !thought
                 ? res.status(404).json({message: 'No thought found with this ID'})
                 : res.json(thought)
         )

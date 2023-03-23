@@ -22,7 +22,7 @@ const thoughtSchema = new Schema(
         
         reactions: [{
             type: Schema.Types.ObjectId,
-            ref: 'reactionSchema'}],
+            ref: 'Reaction'}],
     },
     {
         toJSON: {
